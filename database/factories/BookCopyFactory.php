@@ -23,4 +23,32 @@ class BookCopyFactory extends Factory
             'notes' => fake()->optional()->sentence(),
         ];
     }
+
+    public function available(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => BookCopy::STATUS_AVAILABLE,
+        ]);
+    }
+
+    public function unavailable(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => BookCopy::STATUS_UNAVAILABLE,
+        ]);
+    }
+
+    public function good(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'physical_state' => BookCopy::PHYSICAL_GOOD,
+        ]);
+    }
+
+    public function degraded(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'physical_state' => BookCopy::PHYSICAL_DEGRADED,
+        ]);
+    }
 }
