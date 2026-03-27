@@ -153,17 +153,8 @@
                 "key": "Accept",
                 "value": "application/json",
                 "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"{{admin_email}}\",\n    \"password\": \"{{admin_password}}\"\n}"
-            },
             "url": {
               "raw": "{{base_url}}/logout",
               "host": [
@@ -486,13 +477,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/categories/{{book_slug}}/books",
+              "raw": "{{base_url}}/categories/{{category_slug}}/books",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "categories",
-                "{{book_slug}}",
+                "{{category_slug}}",
                 "books"
               ]
             },
@@ -588,13 +579,13 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/book-copies/{bookCopy_id}",
+              "raw": "{{base_url}}/book-copies/{{copy_id}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "book-copies",
-                "{bookCopy_id}"
+                "{{copy_id}}"
               ]
             },
             "description": "Update an existing physical copy.\n\nMethod: PUT  \nEndpoint: /api/book-copies/{copy_id}  \nAuth: Bearer Token required  \nRole: Admin only\n\nPath params:\n\n- copy_id: numeric ID of the copy\n    \n\nRequest body:\n\n- book_id\n    \n- reference_code\n    \n- status: available | unavailable\n    \n- physical_state: good | degraded\n    \n- notes (optional)"
@@ -607,13 +598,13 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/book-copies/{bookCopy_id}",
+              "raw": "{{base_url}}/book-copies/{{copy_id}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "book-copies",
-                "{bookCopy_id}"
+                "{{copy_id}}"
               ]
             },
             "description": "Delete a physical copy.\n\nMethod: DELETE  \nEndpoint: /api/book-copies/{copy_id}  \nAuth: Bearer Token required  \nRole: Admin only\n\nPath params:\n\n- copy_id: numeric ID of the copy"
