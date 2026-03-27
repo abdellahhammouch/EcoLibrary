@@ -1,0 +1,712 @@
+{
+  "info": {
+    "_postman_id": "0a719fc9-640c-4b25-ab2f-6c4163b6dcf7",
+    "name": "EcoLibrary API",
+    "description": "EcoLibrary API\n\nAPI REST développée avec Laravel pour gérer une bibliothèque écologique.\n\nBase URL  \n{{base_url}}\n\nAuthentication  \nCette API utilise Laravel Sanctum avec Bearer Token.  \nLe token est obtenu via /login ou /register.  \nToutes les routes sauf Register et Login nécessitent un Bearer Token.  \nLes routes d'administration nécessitent un utilisateur avec le rôle admin.\n\nFonctionnalités\n\n- Authentification\n    \n- Gestion des catégories\n    \n- Gestion des livres\n    \n- Gestion des exemplaires\n    \n- Statistiques administrateur\n    \n- Suivi des exemplaires dégradés\n    \n\nRôles\n\n- Admin: accès complet\n    \n- Lecteur: consultation uniquement\n    \n\nComptes de test seedés\n\n- [admin@ecolibrary.test](https://mailto:admin@ecolibrary.test) / password\n    \n- [reader@ecolibrary.test](https://mailto:reader@ecolibrary.test) / password\n    \n\nVariables recommandées\n\n- base_url\n    \n- token\n    \n- category_slug\n    \n- book_slug\n    \n- category_id\n    \n- book_id\n    \n- copy_id\n    \n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53114106",
+    "_collection_link": "https://go.postman.co/collection/53114106-0a719fc9-640c-4b25-ab2f-6c4163b6dcf7?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Lecteur\",\n  \"email\": \"lecteur1@test.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "register"
+              ]
+            },
+            "description": "Create a new reader account.\n\nMethod: POST  \nEndpoint: /api/register  \nAuth: Public\n\nRequest body:\n\n- name\n    \n- email\n    \n- password\n    \n- password_confirmation\n    \n\nResponse:\n\n- message\n    \n- user\n    \n- token"
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "",
+                  "if (data.token) {",
+                  "    pm.environment.set(\"token\", data.token);",
+                  "    console.log(\"Token enregistré :\", data.token);",
+                  "} else {",
+                  "    console.log(\"Aucun token trouvé dans la réponse\");",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "description": "Authenticate a user and return a Sanctum token.\n\nMethod: POST  \nEndpoint: /api/login  \nAuth: Public\n\nRequest body:\n\n- email\n    \n- password\n    \n\nResponse:\n\n- message\n    \n- user\n    \n- token"
+          },
+          "response": []
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "me"
+              ]
+            },
+            "description": "Return the currently authenticated user.\n\nMethod: GET  \nEndpoint: /api/me  \nAuth: Bearer Token required"
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"{{admin_email}}\",\n    \"password\": \"{{admin_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logout"
+              ]
+            },
+            "description": "Revoke the current access token of the authenticated user.\n\nMethod: POST  \nEndpoint: /api/logout  \nAuth: Bearer Token required\n\nRequest body:\n\n- none"
+          },
+          "response": []
+        }
+      ],
+      "description": "Routes publiques d'inscription et de connexion, puis routes d'identification de l'utilisateur connecté.\n\nRoutes:\n\n- Register\n    \n- Login\n    \n- Me\n    \n- Logout"
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "description": "List all categories with books count.\n\nMethod: GET  \nEndpoint: /api/categories  \nAuth: Bearer Token required\n\nOptional query params:\n\n- per_page"
+          },
+          "response": []
+        },
+        {
+          "name": "Show Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories/{{category_slug}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "{{category_slug}}"
+              ]
+            },
+            "description": "Show one category by slug.\n\nMethod: GET  \nEndpoint: /api/categories/{category_slug}  \nAuth: Bearer Token required\n\nPath params:\n\n- category_slug: category slug"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Recyclage\",\n  \"description\": \"Livres sur le recyclage\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            },
+            "description": "Create a new category.\n\nMethod: POST  \nEndpoint: /api/categories  \nAuth: Bearer Token required  \nRole: Admin only\n\nRequest body:\n\n- name\n    \n- description (optional)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Recyclage domestique\",\n  \"description\": \"Guides pratiques pour mieux recycler a la maison\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/categories/{{category_slug}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "{{category_slug}}"
+              ]
+            },
+            "description": "Update an existing category by slug.\n\nMethod: PUT  \nEndpoint: /api/categories/{category_slug}  \nAuth: Bearer Token required  \nRole: Admin only\n\nPath params:\n\n- category_slug: category slug\n    \n\nRequest body:\n\n- name\n    \n- description (optional)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categories/{{category_slug}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "{{category_slug}}"
+              ]
+            },
+            "description": "Delete a category by slug.\n\nMethod: DELETE  \nEndpoint: /api/categories/{category_slug}  \nAuth: Bearer Token required  \nRole: Admin only\n\nPath params:\n\n- category_slug: category slug"
+          },
+          "response": []
+        }
+      ],
+      "description": "Gestion des catégories de livres.\n\nPermissions:\n\n- Lecture: utilisateur authentifié\n    \n- Création / modification / suppression: admin uniquement"
+    },
+    {
+      "name": "Books",
+      "item": [
+        {
+          "name": "List Books",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books"
+              ]
+            },
+            "description": "List books with category and copies counters.\n\nMethod: GET  \nEndpoint: /api/books  \nAuth: Bearer Token required\n\nOptional query params:\n\n- per_page\n    \n- sort: popular | new\n    \n- available_only: true | false\n    \n- q\n    \n- category"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Books",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books/search",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "search"
+              ]
+            },
+            "description": "Search books by title, author, or category.\n\nMethod: GET  \nEndpoint: /api/books/search  \nAuth: Bearer Token required\n\nOptional query params:\n\n- q\n    \n- category\n    \n- per_page\n    \n- available_only\n    \n- sort"
+          },
+          "response": []
+        },
+        {
+          "name": "Show Book",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books/{{book_slug}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "{{book_slug}}"
+              ]
+            },
+            "description": "Show one book by slug and increment its consultations count.\n\nMethod: GET  \nEndpoint: /api/books/{book_slug}  \nAuth: Bearer Token required\n\nPath params:\n\n- book_slug: book slug"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Book",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": 1,\n  \"title\": \"Guide du compost maison\",\n  \"author\": \"Jean Dupont\",\n  \"description\": \"Un guide pratique pour apprendre le compostage domestique\",\n  \"acquired_at\": \"2026-03-24\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/books",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books"
+              ]
+            },
+            "description": "Create a new book in a category.\n\nMethod: POST  \nEndpoint: /api/books  \nAuth: Bearer Token required  \nRole: Admin only\n\nRequest body:\n\n- category_id\n    \n- title\n    \n- author\n    \n- description (optional)\n    \n- acquired_at"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Book",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": 1,\n  \"title\": \"Guide complet du compost maison\",\n  \"author\": \"Jean Dupont\",\n  \"description\": \"Edition mise a jour avec plus de conseils pratiques\",\n  \"acquired_at\": \"2026-03-24\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/books/{{book_slug}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "{{book_slug}}"
+              ]
+            },
+            "description": "Update an existing book by slug.\n\nMethod: PUT  \nEndpoint: /api/books/{book_slug}  \nAuth: Bearer Token required  \nRole: Admin only\n\nPath params:\n\n- book_slug: book slug\n    \n\nRequest body:\n\n- category_id\n    \n- title\n    \n- author\n    \n- description (optional)\n    \n- acquired_at"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Book",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/books/{{book_slug}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "books",
+                "{{book_slug}}"
+              ]
+            },
+            "description": "Delete a book by slug.\n\nMethod: DELETE  \nEndpoint: /api/books/{book_slug}  \nAuth: Bearer Token required  \nRole: Admin only\n\nPath params:\n\n- book_slug: book slug"
+          },
+          "response": []
+        },
+        {
+          "name": "Category Books",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categories/{{book_slug}}/books",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "{{book_slug}}",
+                "books"
+              ]
+            },
+            "description": "List books belonging to a category.\n\nMethod: GET  \nEndpoint: /api/categories/{category_slug}/books  \nAuth: Bearer Token required\n\nPath params:\n\n- category_slug: category slug\n    \n\nOptional query params:\n\n- available_only: true | false\n    \n- per_page\n    \n- sort: popular | new"
+          },
+          "response": []
+        }
+      ],
+      "description": "Gestion des livres de la bibliothèque.\n\nPermissions:\n\n- Lecture et recherche: utilisateur authentifié\n    \n- Création / modification / suppression: admin uniquement\n    \n\nFonctions disponibles:\n\n- Liste complète\n    \n- Recherche par titre ou catégorie\n    \n- Affichage d'un livre\n    \n- Livres d'une catégorie\n    \n- Tri par popularité ou nouveaux arrivages"
+    },
+    {
+      "name": "Book Copies",
+      "item": [
+        {
+          "name": "List Copies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/book-copies",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "book-copies"
+              ]
+            },
+            "description": "List physical copies of books.\n\nMethod: GET  \nEndpoint: /api/book-copies  \nAuth: Bearer Token required  \nRole: Admin only\n\nOptional query params:\n\n- book_slug\n    \n- physical_state\n    \n- per_page"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Copy",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"book_id\": 1,\n  \"reference_code\": \"COPY-1001\",\n  \"status\": \"available\",\n  \"physical_state\": \"good\",\n  \"notes\": \"Exemplaire en tres bon etat\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/book-copies",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "book-copies"
+              ]
+            },
+            "description": "Create a new physical copy for a book.\n\nMethod: POST  \nEndpoint: /api/book-copies  \nAuth: Bearer Token required  \nRole: Admin only\n\nRequest body:\n\n- book_id\n    \n- reference_code\n    \n- status: available | unavailable\n    \n- physical_state: good | degraded\n    \n- notes (optional)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Copy",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"book_id\": 1,\n  \"reference_code\": \"COPY-1001\",\n  \"status\": \"unavailable\",\n  \"physical_state\": \"degraded\",\n  \"notes\": \"Couverture abimee\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/book-copies/{bookCopy_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "book-copies",
+                "{bookCopy_id}"
+              ]
+            },
+            "description": "Update an existing physical copy.\n\nMethod: PUT  \nEndpoint: /api/book-copies/{copy_id}  \nAuth: Bearer Token required  \nRole: Admin only\n\nPath params:\n\n- copy_id: numeric ID of the copy\n    \n\nRequest body:\n\n- book_id\n    \n- reference_code\n    \n- status: available | unavailable\n    \n- physical_state: good | degraded\n    \n- notes (optional)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Copy",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/book-copies/{bookCopy_id}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "book-copies",
+                "{bookCopy_id}"
+              ]
+            },
+            "description": "Delete a physical copy.\n\nMethod: DELETE  \nEndpoint: /api/book-copies/{copy_id}  \nAuth: Bearer Token required  \nRole: Admin only\n\nPath params:\n\n- copy_id: numeric ID of the copy"
+          },
+          "response": []
+        }
+      ],
+      "description": "Gestion des exemplaires physiques des livres.\n\nPermissions:\n\n- Accès admin uniquement\n    \n\nFonctions disponibles:\n\n- Liste des exemplaires\n    \n- Création\n    \n- Mise à jour\n    \n- Suppression\n    \n- Suivi de l'état physique"
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "stats"
+              ]
+            },
+            "description": "Return global admin statistics for the library.\n\nMethod: GET  \nEndpoint: /api/admin/stats  \nAuth: Bearer Token required  \nRole: Admin only\n\nReturned data includes:\n\n- total books\n    \n- total copies\n    \n- degraded copies count\n    \n- global condition score\n    \n- most consulted books\n    \n- degraded copies by book"
+          },
+          "response": []
+        }
+      ],
+      "description": "Routes réservées à l'administrateur.\n\nFonctions disponibles:\n\n- Statistiques globales\n    \n- Livres les plus consultés\n    \n- Quantité d'exemplaires dégradés par ouvrage"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": ""
+    },
+    {
+      "key": "category_slug",
+      "value": ""
+    },
+    {
+      "key": "book_slug",
+      "value": ""
+    },
+    {
+      "key": "book_id",
+      "value": ""
+    },
+    {
+      "key": "copy_id",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}
