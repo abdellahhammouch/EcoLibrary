@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "0a719fc9-640c-4b25-ab2f-6c4163b6dcf7",
     "name": "EcoLibrary API",
-    "description": "EcoLibrary API\n\nAPI REST développée avec Laravel pour gérer une bibliothèque écologique.\n\nBase URL  \n{{base_url}}\n\nAuthentication  \nCette API utilise Laravel Sanctum avec Bearer Token.  \nLe token est obtenu via /login ou /register.  \nToutes les routes sauf Register et Login nécessitent un Bearer Token.  \nLes routes d'administration nécessitent un utilisateur avec le rôle admin.\n\nFonctionnalités\n\n- Authentification\n    \n- Gestion des catégories\n    \n- Gestion des livres\n    \n- Gestion des exemplaires\n    \n- Statistiques administrateur\n    \n- Suivi des exemplaires dégradés\n    \n\nRôles\n\n- Admin: accès complet\n    \n- Lecteur: consultation uniquement\n    \n\nComptes de test seedés\n\n- [admin@ecolibrary.test](https://mailto:admin@ecolibrary.test) / password\n    \n- [reader@ecolibrary.test](https://mailto:reader@ecolibrary.test) / password\n    \n\nVariables recommandées\n\n- base_url\n    \n- token\n    \n- category_slug\n    \n- book_slug\n    \n- category_id\n    \n- book_id\n    \n- copy_id\n    \n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "description": "EcoLibrary API\n\nAPI REST développée avec Laravel pour gérer une bibliothèque écologique.\n\nBase URL\n{{base_url}}\n\nAuthentication\nCette API utilise Laravel Sanctum avec Bearer Token.\nLe token est obtenu via /login ou /register.\nToutes les routes sauf Register et Login nécessitent un Bearer Token.\nLes routes d'administration nécessitent un utilisateur avec le rôle admin.\n\nFonctionnalités\n- Authentification\n- Gestion des catégories\n- Gestion des livres\n- Gestion des exemplaires\n- Statistiques administrateur\n- Suivi des exemplaires dégradés\n\nRôles\n- Admin: accès complet\n- Lecteur: consultation uniquement\n\nComptes de test seedés\n- admin@ecolibrary.test / password\n- reader@ecolibrary.test / password\n\nVariables recommandées\n- base_url\n- token\n- category_slug\n- book_slug\n- category_id\n- book_id\n- copy_id\n- admin_email\n- admin_password\n- reader_email\n- reader_password",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "53114106",
     "_collection_link": "https://go.postman.co/collection/53114106-0a719fc9-640c-4b25-ab2f-6c4163b6dcf7?source=collection_link"
@@ -686,27 +686,43 @@
   "variable": [
     {
       "key": "base_url",
-      "value": ""
+      "value": "http://127.0.0.1:8000/api"
     },
     {
       "key": "category_slug",
-      "value": ""
+      "value": "biodiversite"
     },
     {
       "key": "book_slug",
-      "value": ""
+      "value": "guide-du-compost-maison"
     },
     {
       "key": "book_id",
-      "value": ""
+      "value": "1"
     },
     {
       "key": "copy_id",
-      "value": ""
+      "value": "1"
     },
     {
       "key": "token",
       "value": ""
+    },
+    {
+      "key": "admin_email",
+      "value": "admin@ecolibrary.test"
+    },
+    {
+      "key": "admin_password",
+      "value": "password"
+    },
+    {
+      "key": "reader_email",
+      "value": "reader@ecolibrary.test"
+    },
+    {
+      "key": "reader_password",
+      "value": "password"
     }
   ]
 }
