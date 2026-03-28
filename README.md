@@ -1,59 +1,190 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# EcoLibrary API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API REST developpee avec Laravel pour gerer une bibliotheque ecologique.
 
-## About Laravel
+## Apercu
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Le projet couvre les fonctionnalites suivantes :
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Authentification avec Laravel Sanctum
+- Gestion des categories
+- Gestion des livres
+- Gestion des exemplaires
+- Statistiques administrateur
+- Suivi des exemplaires degrades
+- Slugs pour categories et livres
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Roles
 
-## Learning Laravel
+- `admin` : acces complet
+- `lecteur` : consultation uniquement
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Documentation Postman
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Documentation publiee : https://go.postman.co/collection/53114106-0a719fc9-640c-4b25-ab2f-6c4163b6dcf7?source=collection_link
+- Collection exportee dans le projet : `EcoLibrary API.postman_collection.json`
 
-## Laravel Sponsors
+## Prerequis
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- PHP `^8.2`
+- Composer
+- MySQL
+- Node.js et npm
 
-### Premium Partners
+## Installation
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1. Cloner le projet.
+2. Installer les dependances PHP :
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. Copier le fichier d'environnement :
 
-## Code of Conduct
+```bash
+cp .env.example .env
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+4. Generer la cle de l'application :
 
-## Security Vulnerabilities
+```bash
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5. Configurer la connexion MySQL dans `.env`.
 
-## License
+## Initialisation de la base
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Pour repartir d'une base propre avec des donnees de test coherentes :
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+Le seeder principal cree :
+
+- `1` administrateur
+- `1` lecteur principal
+- `8` lecteurs supplementaires
+- `5` categories
+- `4` ou `5` livres par categorie
+- `2` ou `3` exemplaires par livre
+
+## Comptes de test
+
+- `admin@ecolibrary.test` / `password`
+- `reader@ecolibrary.test` / `password`
+
+## Lancer le projet
+
+Lancer l'API localement :
+
+```bash
+php artisan serve
+```
+
+URL locale par defaut :
+
+```txt
+http://127.0.0.1:8000
+```
+
+## Utilisation avec Postman
+
+1. Importer la collection `EcoLibrary API.postman_collection.json`.
+2. Creer un environnement Postman local, ou reutiliser celui deja exporte si tu en as un.
+3. Definir au minimum les variables suivantes :
+
+```txt
+base_url = http://127.0.0.1:8000/api
+token =
+category_slug = biodiversite
+book_slug = guide-du-compost-maison
+book_id = 1
+copy_id = 1
+admin_email = admin@ecolibrary.test
+admin_password = password
+reader_email = reader@ecolibrary.test
+reader_password = password
+```
+
+4. Executer `Login` pour recuperer automatiquement le `token`.
+5. Tester ensuite les routes protegees avec `Bearer {{token}}`.
+
+## Ordre de test recommande
+
+1. `POST /register`
+2. `POST /login`
+3. `GET /me`
+4. `GET /categories`
+5. `GET /books`
+6. `GET /books/search`
+7. `GET /categories/{category_slug}/books`
+8. Routes admin : categories, books, book-copies, stats
+
+## Authentification
+
+L'API utilise des tokens Sanctum.
+
+- Routes publiques : `POST /register`, `POST /login`
+- Routes authentifiees : toutes les autres
+- Routes admin : creation, modification, suppression, statistiques
+
+Le token doit etre envoye dans l'en-tete :
+
+```txt
+Authorization: Bearer <token>
+```
+
+## Endpoints principaux
+
+### Auth
+
+- `POST /api/register`
+- `POST /api/login`
+- `GET /api/me`
+- `POST /api/logout`
+
+### Categories
+
+- `GET /api/categories`
+- `GET /api/categories/{category_slug}`
+- `POST /api/categories`
+- `PUT /api/categories/{category_slug}`
+- `DELETE /api/categories/{category_slug}`
+
+### Books
+
+- `GET /api/books`
+- `GET /api/books/search`
+- `GET /api/books/{book_slug}`
+- `POST /api/books`
+- `PUT /api/books/{book_slug}`
+- `DELETE /api/books/{book_slug}`
+- `GET /api/categories/{category_slug}/books`
+
+### Book Copies
+
+- `GET /api/book-copies`
+- `POST /api/book-copies`
+- `PUT /api/book-copies/{copy_id}`
+- `DELETE /api/book-copies/{copy_id}`
+
+### Admin
+
+- `GET /api/admin/stats`
+
+## Tests
+
+Executer la suite de tests :
+
+```bash
+php artisan test
+```
+
+## Notes
+
+- Les slugs sont utilises pour les categories et les livres.
+- La consultation d'un livre incremente son compteur de consultations.
+- Une notification email est envoyee lorsqu'un exemplaire est marque comme degrade.
